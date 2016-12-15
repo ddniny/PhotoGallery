@@ -1,4 +1,10 @@
 {
+    "apiKey": "743a7a8b5d5b3f1b1940750e58f64dee",
     "baseUrl": "https://api.flickr.com/services/rest/",
-    "apiKey": "743a7a8b5d5b3f1b1940750e58f64dee"
+    "imgUrlTemplate": "https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg",
+    "targetImgSize": "Medium",
+    "size": {
+        "width": 215,
+        "gap": 17
+    }
 }

@@ -1,16 +1,57 @@
+/*body {
+    background: #252323;
+}*/
+
+.header {
+    text-align: center;
+    font-family: "Avenir Next", Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;
+    /*color: #fff;*/
+    color: #000000;
+}   
+
+.title {
+    letter-spacing: -1px;
+    font-size: 3em;
+    line-height: 1;
+    font-weight: normal;
+    padding: 100px;
+}
+
+.subtitle {
+    display: block;
+    padding: 0.5em 0 1em;
+    color: #999;
+    font-weight: normal;
+    font-size: 0.45em;
+    letter-spacing: 0;
+}
+
+.photo-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
 .photo-gallery {
-    column-width: 215px;
+    max-width: 1000px;
+    margin: 0 auto;
+    /*column-width: 215px;
     -webkit-column-width: 215px; /* Chrome, Safari, Opera */
-    -moz-column-width: 215px; /* Firefox */
-    column-gap: 17px;
+    /*-moz-column-width: 215px; /* Firefox */
+    /*column-gap: 17px;*/
+
+    position: relative;
 }
 
 .thumbnail {
     margin-bottom: 9px;
+    display: inline-block;
 }
 
 img {
-    width: 100%;
+    /*width: 100%;*/
+    width: 215px;
+    position: absolute;
+    cursor: pointer;
 }
 
 .preview {
@@ -20,10 +61,10 @@ img {
     top: 0;
     background: rgba(255,255,255,0.9);
     display: flex;
-    justify-content: center;
-    -webkit-justify-content: center;
-    -moz-justify-content: center;
-    -ms-justify-content: center;
+    justify-content: space-around;
+    -webkit-justify-content: space-around;
+    -moz-justify-content: space-around;
+    -ms-justify-content: space-around;
     align-items: center;
     -webkit-align-items: center;
     -moz-align-items: center;
@@ -31,9 +72,46 @@ img {
 }
 
 .preview-image {
-    width: 400px;
+    max-width: 500px;
+    min-width: 400px;
+    animation-name: zoom;
+    animation-duration: 600ms;
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+}
+
+.arrow-left {
+    background-image: url("/assets/left_arrow.png");
+    background-position: center;
+    width: 90px;
+    height: 90px;
+    background-size: 40px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.arrow-right {
+    background-image: url("/assets/right_arrow.png");
+    background-position: center;
+    width: 90px;
+    height: 90px;
+    background-size: 40px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    opacity: 0.5;
 }
 
 .hidden {
     display: none;
+}
+
+@keyframes zoom {
+    from {transform:scale(0)}
+    to {transform:scale(1)}
+}
+
+@-webkit-keyframes zoom {
+    from {-webkit-transform:scale(0)}
+    to {-webkit-transform:scale(1)}
 }

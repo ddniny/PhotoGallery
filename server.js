@@ -14,11 +14,12 @@ http.createServer( function(req, res) {
 		".html" : "text/html",
 		".js": "application/javascript",
 		".css": "text/css",
-        ".json": "application/json"
+        ".json": "application/json",
+        ".png": "image/png"
         // ".txt": "text/plain",
         // 	".jpg": "image/jpeg",
         // 	".gif": "image/gif",
-        // 	".png": "image/png"
+        	
 	};
 
 	let mimeType = validExtensions[ext];
