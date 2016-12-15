@@ -29,7 +29,7 @@ class ImageModel {
     parseSizes(imageSizes) {
         console.log(imageSizes);
         if (imageSizes.stat !== "ok" || !imageSizes.hasOwnProperty("sizes")) {
-            // something broke!
+            // something wrong!
             return;
         }
 
