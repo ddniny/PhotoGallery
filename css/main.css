@@ -1,0 +1,14 @@
+#photo-gallery {
+    column-width: 215px;
+    -webkit-column-width: 215px; /* Chrome, Safari, Opera */
+    -moz-column-width: 215px; /* Firefox */
+    column-gap: 17px;
+}
+
+.thumbnail {
+    margin-bottom: 9px;
+}
+
+img {
+    width: 100%;
+}
