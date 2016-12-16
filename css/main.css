@@ -1,20 +1,37 @@
 /*body {
     background: #252323;
 }*/
+#app {
+    font-family: "Avenir Next", Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;
+}
 
 .header {
     text-align: center;
-    font-family: "Avenir Next", Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;
-    /*color: #fff;*/
+    /*font-family: "Avenir Next", Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;*/
     color: #000000;
 }   
 
+.sticky-header {
+    height: 50px;
+    background: rgba(255, 243,270, 0.6);
+    width: 100vw;
+    position: relative;
+    top: 0;
+    z-index: 1;
+}
+
+.sticky {
+    position:fixed;
+    margin-top: 0;
+    top:0;
+}
+            
 .title {
     letter-spacing: -1px;
     font-size: 3em;
     line-height: 1;
     font-weight: normal;
-    padding: 100px;
+    padding: 72px;
 }
 
 .subtitle {
@@ -26,13 +43,85 @@
     letter-spacing: 0;
 }
 
+#search {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#label {
+    top: 0px;
+    left: 4px;
+    position: absolute;
+    z-index: 20;
+}
+
+#label label {
+    width: 50px;
+    height: 50px;
+    display: block;
+    background: url("/assets/search.png") 0 0;
+    background-size: 30px;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+}
+
+/*#label label:hover {
+    background: url("../img/search.png") -60px 0
+}
+
+#label.active label {
+    background: url("../img/search.png") -60px 0
+}*/
+
+#input {
+    position: absolute;
+    left: 60px;
+    width: 450px;
+    height: 100%;
+    z-index: 5;
+    overflow: hidden;
+}
+
+#input input {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -450px;
+    width: 450px;
+    height: 100%;
+    margin: 0;
+    padding: 0 10px;
+    border: none;
+    /*background-color: #23688b;
+    color: #fff;*/
+    font-size: 18px;
+    backface-visibility: none;
+    border-radius: 0;
+    transition: left 0;
+}
+
+#input input:focus {
+    outline: none
+}
+
+#input.focus {
+    z-index: 20
+}
+
+#input.focus input {
+    left: 0;
+    transition: left 0.3s;
+}
+
 .photo-container {
-    max-width: 1000px;
-    margin: 0 auto;
+    max-width: 1300px;
+    margin: 52px auto 0;
 }
 
 .photo-gallery {
-    max-width: 1000px;
+    /*max-width: 1000px;*/
     margin: 0 auto;
     /*column-width: 215px;
     -webkit-column-width: 215px; /* Chrome, Safari, Opera */
@@ -55,10 +144,12 @@ img {
 }
 
 .preview {
+    z-index: 2;
     position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
+    left: 0;
     background: rgba(255,255,255,0.9);
     display: flex;
     justify-content: space-around;
@@ -78,6 +169,7 @@ img {
     animation-duration: 600ms;
     -webkit-animation-name: zoom;
     -webkit-animation-duration: 0.6s;
+    position: relative;
 }
 
 .arrow-left {
@@ -100,6 +192,15 @@ img {
     background-repeat: no-repeat;
     cursor: pointer;
     opacity: 0.5;
+}
+
+.image-title {
+    width: 100%;
+    text-align: center;
+    padding: 50px;
+    background: rgba(255, 243,270, 0.6);
+    position: absolute;
+    bottom: 2vh;
 }
 
 .hidden {

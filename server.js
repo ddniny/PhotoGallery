@@ -6,7 +6,9 @@ const port = 3000,
 
 console.log("Starting web server at " + serverUrl + ":" + port);
 
-http.createServer( function(req, res) {
+http.createServer(function(req, res) {
+    console.log(req.method);
+    
 	let filename = req.url === "/" ? "/index.html" : req.url;
 	let ext = path.extname(filename);
 	let localPath = __dirname;

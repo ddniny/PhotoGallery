@@ -2,15 +2,34 @@
 class ImageCollection {
     constructor() {
         this.baseUrl = globalConfig.baseUrl;
-        this.args = [
+        this.recentArgs = [
             "method=flickr.photos.getRecent",
+            `api_key=${globalConfig.apiKey}`,
+            "format=json", //response in JSON format
+            "nojsoncallback=1" //just want the raw JSON, with no function wrapper
+        ];
+
+        this.searchArgs = [
+            "method=flickr.photos.search",
             `api_key=${globalConfig.apiKey}`,
             "format=json", //response in JSON format
             "nojsoncallback=1" //just want the raw JSON, with no function wrapper
         ];
         this.images = [];
 
-        fetchData(url(this.baseUrl, this.args)).then((imagesData) => {
+        this.fetchRecent();
+    }
+
+    fetchRecent() {
+        fetchData(url(this.baseUrl, this.recentArgs)).then((imagesData) => {
+            this.fetchImages(imagesData);
+        });
+    }
+
+    searchImages(searchTerm) {
+        this.searchArgs.push([`text=${searchTerm}`]);
+        fetchData(url(this.baseUrl, this.searchArgs)).then((imagesData) => {
+            this.images = [];
             this.fetchImages(imagesData);
         });
     }

@@ -11,6 +11,14 @@
 <div id="app">
     <div class="header">
         <h1 class="title">Image Grid Effects<span class="subtitle">Flickr photo gallery</span></h1>
+        <div class="sticky-header">
+            <!--<button class="refresh">refresh</button>-->
+            <form id="search" action="#" method="get">
+                <div id="label"><label for="search-terms" id="search-label"></label></div>
+                <div id="input"><input type="text" name="search-terms" id="search-terms" placeholder="Enter search terms..."></div>
+            </form>
+
+        </div>
     </div>
     <div class="photo-container">
         <div class="photo-gallery"></div>
@@ -18,6 +26,7 @@
             <div class="arrow-left"></div>
             <img class="preview-image"/>
             <div class="arrow-right"></div>
+            <div class="image-title"></div>
         </div>
     </div>
 </div>
