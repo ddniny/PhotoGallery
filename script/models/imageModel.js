@@ -1,17 +1,19 @@
 'use strict';
 
+/**
+ * A model class for individual image. 
+ * Responsible for:
+ * 1. talking with flickr backend to fetch a single image data
+ * 2. storing a single image data
+ */
 class ImageModel {
 
-    constructor(photoId, title, farmId, serverId, secret) {
-        // TODO: clean params
+    constructor(photoId, title) { 
+        // initialize instance variables
         this.photoId = photoId;
         this.title = title;
-        this.farmId = farmId;
-        this.serverId = serverId;
-        this.secret = secret;
-        this.index = null;
-
         this.baseUrl = globalConfig.baseUrl;
+        this.targetSize = globalConfig.targetImgSize; // the size users want to use (can be configured in config.json file)
         this.args = [
             "method=flickr.photos.getSizes",
             `api_key=${globalConfig.apiKey}`,
@@ -21,51 +23,51 @@ class ImageModel {
 
         ];
         
-        this.sizeToUrlMap = new Map();
-        this.targetSize = globalConfig.targetImgSize;
+        this.index = -1;
+        // a promise indicating if the image loading is done
         this.imageLoaded = this.getSizes();
-
-        // this.imgSrc = this.construcImgSrc();
-
-        // TODO
+        // origin image metadata got from flickr service
         this.imageMeta = null;
+        // the image coordinates on the page
         this.x = -1;
         this.y = -1;
-        this.width = -1;
+        // the image width and height after scaled that can be configured in config.json file 
+        this.width = -1; 
         this.height = -1;
     }
 
-    // construcImgSrc() {
-    //     return `https://farm${this.farmId}.staticflickr.com/${this.serverId}/${this.photoId}_${this.secret}.jpg`;
-    // }
-
+    /**
+     * Fetch a list of available sizes and corresponding source urls for a photo from flickr service.
+     * TODO: Add fail handler
+     */
     getSizes() {
         return fetchData(url(this.baseUrl, this.args)).then((imageSizes) => { 
             this.parseSizes(imageSizes, this.targetSize);
         });
     }
 
+    /**
+     * Parse a list of available sizes for a photo from flickr service.
+     * @param imageSizes A list of aailable sizes for a image.
+     * @param targetSize The size the user want to use which can be configured in config.json file.
+     */
     parseSizes(imageSizes, targetSize) {
-        console.log(imageSizes);
-        if (imageSizes.stat !== "ok" || !imageSizes.hasOwnProperty("sizes")) {
+        if (imageSizes.stat !== "ok" || 
+        !imageSizes.hasOwnProperty("sizes") ||
+        !imageSizes.sizes.hasOwnProperty("size")) {
             // something wrong!
             return;
         }
 
-        // imageSizes.sizes.size.forEach((size) => {
-        //     this.sizeToUrlMap.set(size.label, size.source);
-        // });
         this.imageMeta = imageSizes.sizes.size.find((size) => {
             return size.label === targetSize;
         });
 
+        // scale the image using image's original width, height 
+        // and the desired width configured in config.json file
         if (this.imageMeta) {
             this.width = globalConfig.size.width;
             this.height = (this.width / this.imageMeta.width) * this.imageMeta.height;
         }
-    }
-
-    getImageUrlForSize(targetSize) {
-        return this.sizeToUrlMap.get(targetSize);
     }
 }

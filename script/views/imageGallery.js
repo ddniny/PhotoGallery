@@ -1,9 +1,18 @@
 'use strict';
 
+/**
+ * A view class for image gallery. 
+ * Responsible for manipulating dom elements and communicating with model classes.
+ */
 class ImageGallery {
     
     constructor() {
+        // find dom elements
+        this.app = document.getElementById("app");
         this.stickyHeader = document.getElementsByClassName("sticky-header")[0];
+        this.searchEl = document.getElementById("search-input");
+        this.labelEl = document.getElementById("search-label");
+        this.searchForm = document.getElementById("search");
         this.photoContainer = document.getElementsByClassName("photo-container")[0];
         this.photoGallery = document.getElementsByClassName("photo-gallery")[0];
         this.preview = document.getElementsByClassName("preview")[0];
@@ -12,33 +21,73 @@ class ImageGallery {
         this.arrowRight = document.getElementsByClassName("arrow-right")[0];        
         this.imageTitle = document.getElementsByClassName("image-title")[0];
 
-        this.preview.addEventListener("click", () => this.closePreview());
-        this.arrowLeft.addEventListener("click", (e) => this.showPrevious(e));
-        this.arrowRight.addEventListener("click", (e) => this.showNext(e));
-
-        this.previewIdx = null;
+        // initialize non-dom inistance variables
+        this.LazyResizeWaitInMilliseconds = 300;
+        this.previewIdx = -1; // the index of an image that is currently opened in preview
+        this.initHeaderOffset = this.stickyHeader.offsetTop;
         this.colNum = this.getColumnNum();
         this.setGalleryWidth();
-
-        // listen to window resize
-        const LazyResizeWaitInMilliseconds = 300;
-        window.addEventListener("resize", debounce(() => this.handleResize(), LazyResizeWaitInMilliseconds), false);
-
-        // listen to window scroll
-        const originOffsetTop = this.stickyHeader.offsetTop;
-        window.onscroll = () => {
-            let scrollTop = window.pageYOffset;
-            if(scrollTop > originOffsetTop){
-                this.stickyHeader.classList.add("sticky");
-            } else { 
-                this.stickyHeader.classList.remove("sticky");
-            }
-        }
-
-        this.search();
+        
+        // register event listenters 
+        this.registerEventsHandler();
     }
 
-    handleResize() {
+    /**
+     * Register event listeners on elements.
+     */
+    registerEventsHandler() {
+        // register clicks and toggle classes
+        this.labelEl.addEventListener("click", () => this.onSearchIconClicked());
+        this.app.addEventListener("click",(e) => this.onGalleryClicked(e));
+        this.searchForm.addEventListener("submit", (e) => this.onSearchFormSubmit(e));
+        this.preview.addEventListener("click", () => this.closePreview());
+        this.arrowLeft.addEventListener("click", (e) => this.showPreOrNextImg(e, -1));
+        this.arrowRight.addEventListener("click", (e) => this.showPreOrNextImg(e, 1));
+        // listen to window resize
+        window.addEventListener("resize", debounce(() => this.onWindowResize(), this.LazyResizeWaitInMilliseconds), false);
+        // listen to window scroll
+        window.addEventListener("scroll", () => this.onWindowScroll(), false);
+    }
+
+    /**
+     * Event handler will be called when app element is clicked.
+     *
+     * @param e A dom event.
+     */
+    onGalleryClicked(e) {
+        const clickedID = e.target.id;
+        if (clickedID != "search-terms" && clickedID != "search-icon") {
+            if (this.searchEl.classList.contains("focus")) {
+                this.searchEl.classList.remove("focus");
+            }
+        }
+    }
+
+    /**
+     * Event handler will be called when search element is clicked.
+     */
+    onSearchIconClicked() {
+        if (this.searchEl.classList.contains("focus")) {
+            this.searchEl.classList.remove("focus");
+        } else {
+            this.searchEl.classList.add("focus");
+        }
+    }
+
+    /**
+     * Event handler will be called when search form is submited.
+     *
+     * @param e A dom event.
+     */
+    onSearchFormSubmit(e) {
+        event.preventDefault();
+        this.searchImages();
+    }
+
+    /**
+     * Event handler will be called when window is resized.
+     */
+    onWindowResize() {
         const newColNum = this.getColumnNum();
         if (this.colNum !== newColNum) {
             this.colNum = newColNum;
@@ -48,119 +97,123 @@ class ImageGallery {
         }
     }
 
-    appendImage(image, targetSize) {
-        const imgSrc = image.imageMeta.source;//image.getImageUrlForSize(targetSize);
+    /**
+     * Event handler will be called when window is scrolled.
+     */
+    onWindowScroll() {
+        const scrollTop = window.pageYOffset;
+        if(scrollTop > this.initHeaderOffset){
+            this.stickyHeader.classList.add("sticky");
+        } else { 
+            this.stickyHeader.classList.remove("sticky");
+        }
+    }
+
+    /**
+     * Create dom elments for an image and append it to dom.
+     *
+     * @param image A "ImageModel" instance.
+     */
+    appendImage(image) {
+        const imgSrc = image.imageMeta.source;
         if (imgSrc) {
+            // create "thumbnail" element and bind click listener
             let div = document.createElement("div");
             div.className = 'thumbnail';
             div.addEventListener("click", () => this.openPreview(imgSrc, image.title, image.index));
-            // let txt = document.createTextNode(image.title);
+
+            // create img div and set attributes
             let img = document.createElement("img");
             img.setAttribute("src", imgSrc);
             img.setAttribute("alt", image.title);
             img.style.top = image.y + "px";
             img.style.left = image.x + "px";
             div.appendChild(img);
+
+            // append to photoGallery element
             this.photoGallery.appendChild(div);
         }
     }
 
+    /**
+     * Open preview for a given image.
+     * TODO: Hide left/right arrow when showing first/last image.
+     * @param imageSrc The image src url.
+     * @param imageTitle The image title.
+     * @param index The index of the image.
+     */
     openPreview(imageSrc, imageTitle, index) {
         this.previewIdx = index;
         this.previewImage.setAttribute("src", imageSrc);
-        if (imageTitle) {
+        // show image title if there is any otherwise hide it.
+        if (imageTitle && imageTitle.trim()) {
             this.imageTitle.innerHTML = imageTitle;
             this.imageTitle.classList.remove("hidden");
-        } else {
+        } else if (!this.imageTitle.classList.contains("hidden")) {
             this.imageTitle.classList.add("hidden");
         }
         
-        this.preview.classList.remove("hidden");
+        if (this.preview.classList.contains("hidden")) {
+            this.preview.classList.remove("hidden");
+        }
     }
 
+    /**
+     * Close preview.
+     */
     closePreview() {
-        this.preview.classList.add("hidden");
+        if (!this.preview.classList.contains("hidden")) {
+            this.preview.classList.add("hidden");
+        }
     }
 
-    showPrevious(e) {
+    /**
+     * Show previous 
+     *
+     * @param e A dom event.
+     * @param preOrNext A number should be -1(previous) or 1(next).
+     */
+    showPreOrNextImg(e, preOrNext) {
         e.stopPropagation();
-        const nextIdx = this.previewIdx - 1, // > 0 ? this.previewIdx - 1 : 0,
+        const nextIdx = this.previewIdx + preOrNext,
             x = ~~(nextIdx / this.colNum),
             y = nextIdx % this.colNum,
-            preImg = imageCollection.images[x] && imageCollection.images[x][y];
-        if (preImg) {
-            const imgSrc = preImg.imageMeta.source;//preImg.getImageUrlForSize("Medium"); // TODO
-            this.openPreview(imgSrc, preImg.title, preImg.index);  
+            img = imageCollection.images[x] && imageCollection.images[x][y];
+        if (img) {
+            const imgSrc = img.imageMeta.source;
+            this.openPreview(imgSrc, img.title, img.index);  
         } 
     }
 
-    showNext(e) {
-        e.stopPropagation();
-        const nextIdx = this.previewIdx + 1,// < imageCollection.images.length ? this.previewIdx + 1 : imageCollection.images.length - 1,
-            x = ~~(nextIdx / this.colNum),
-            y = nextIdx % this.colNum,
-            nextImg = imageCollection.images[x] && imageCollection.images[x][y];
-        if (nextImg) {
-            const imgSrc = nextImg.imageMeta.source;//preImg.getImageUrlForSize("Medium"); // TODO
-            this.openPreview(imgSrc, nextImg.title, nextImg.index);  
-        }   
-    }
-
+    /**
+     * Dynamically calculate the column number that can be shown on screen 
+     * based on the container width and image width and gap
+     * configured in the config.json file.
+     */
     getColumnNum() {
-        const containerWidth = this.photoContainer.offsetWidth;
-        const imgWidth = globalConfig.size.width;
-        const imgGap = globalConfig.size.gap;
-        let colNum = ~~(containerWidth / (imgWidth + imgGap));
-        if ((colNum + 1) * imgWidth + colNum * imgGap <= containerWidth) {
-            colNum += 1;
-        } 
+        const containerWidth = this.photoContainer.offsetWidth,
+            imgWidth = globalConfig.size.width,
+            imgGap = globalConfig.size.gap;
         
-        return colNum;
+        return Math.floor((containerWidth + imgGap) / (imgWidth + imgGap));
     }
 
+    /**
+     * Set the width of the gallery element.
+     * Should be called after the window resize and hence the this.colNum is changed
+     * in order to properly center the photoGallery element.
+     */
     setGalleryWidth() {
         this.photoGallery.style.width = this.colNum * globalConfig.size.width + (this.colNum - 1) * globalConfig.size.gap + "px";
     }
 
-    search() {
-        // get vars
-        var searchEl = document.querySelector("#input");
-        var labelEl = document.querySelector("#label");
-
-        // register clicks and toggle classes
-        labelEl.addEventListener("click",function(){
-            if (searchEl.classList.contains("focus")) {
-                searchEl.classList.remove("focus");
-                labelEl.classList.remove("active");
-            } else {
-                searchEl.classList.add("focus");
-                labelEl.classList.add("active");
-            }
-        });
-
-        // register clicks outisde search box, and toggle correct classes
-        document.addEventListener("click",function(e){
-            var clickedID = e.target.id;
-            if (clickedID != "search-terms" && clickedID != "search-label") {
-                if (searchEl.classList.contains("focus")) {
-                    searchEl.classList.remove("focus");
-                    labelEl.classList.remove("active");
-                }
-            }
-        });
-
-        const element = document.querySelector('form');
-        element.addEventListener('submit', event => {
-            event.preventDefault();
-            // actual logic, e.g. validate the form
-            console.log('Form submission cancelled.');
-            this.searchImages();
-        });
-    }
-
+    /**
+     * Get search term, empty photoGallery and call imageCollection to search images.
+     * TODO: validate search term input
+     */
     searchImages() {
-        const searchTerm = 
+        const searchTerm = document.getElementById("search-terms").value;
         this.photoGallery.innerHTML = "";
-        imageCollection.searchImages(document.querySelector("input").value);
+        imageCollection.searchImages(searchTerm);
     }
 }

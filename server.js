@@ -17,10 +17,10 @@ http.createServer(function(req, res) {
 		".js": "application/javascript",
 		".css": "text/css",
         ".json": "application/json",
-        ".png": "image/png"
-        // ".txt": "text/plain",
-        // 	".jpg": "image/jpeg",
-        // 	".gif": "image/gif",
+        ".png": "image/png",
+        ".txt": "text/plain",
+		".jpg": "image/jpeg",
+		".gif": "image/gif"
         	
 	};
 
