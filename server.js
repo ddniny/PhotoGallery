@@ -18,6 +18,7 @@ http.createServer(function(req, res) {
 		".css": "text/css",
         ".json": "application/json",
         ".png": "image/png",
+		".ico": "image/x-icon",
         ".txt": "text/plain",
 		".jpg": "image/jpeg",
 		".gif": "image/gif"
