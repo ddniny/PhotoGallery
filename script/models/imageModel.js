@@ -73,9 +73,13 @@ class ImageModel {
             return;
         }
 
-        this.imageMeta = imageSizes.sizes.size.find((size) => {
-            return size.label === targetSize;
-        });
+        const sizes = imageSizes.sizes.size;
+        for (let i = 0; i < sizes.length; i++) {
+            if (sizes[i].label === targetSize) {
+                this.imageMeta = sizes[i];
+                break;
+            }
+        }
 
         // scale the image using image's original width, height 
         // and the desired width configured in config.json file
