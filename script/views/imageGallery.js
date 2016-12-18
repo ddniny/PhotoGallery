@@ -80,7 +80,7 @@ class ImageGallery {
      * @param e A dom event.
      */
     onSearchFormSubmit(e) {
-        event.preventDefault();
+        e.preventDefault();
         this.searchImages();
     }
 
@@ -189,6 +189,7 @@ class ImageGallery {
      * Dynamically calculate the column number that can be shown on screen 
      * based on the container width and image width and gap
      * configured in the config.json file.
+     * @return The number of columns.
      */
     getColumnNum() {
         const containerWidth = this.photoContainer.offsetWidth,

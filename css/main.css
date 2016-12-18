@@ -135,10 +135,10 @@
     left: 0;
     background: rgba(255,255,255,0.9);
     display: flex;
-    justify-content: space-around;
-    -webkit-justify-content: space-around;
-    -moz-justify-content: space-around;
-    -ms-justify-content: space-around;
+    justify-content: center;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    -ms-justify-content: center;
     align-items: center;
     -webkit-align-items: center;
     -moz-align-items: center;

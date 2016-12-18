@@ -24,8 +24,6 @@ class ImageModel {
         ];
         
         this.index = -1;
-        // a promise indicating if the image loading is done
-        this.imageLoaded = this.getSizes();
         // origin image metadata got from flickr service
         this.imageMeta = null;
         // the image coordinates on the page
@@ -37,13 +35,29 @@ class ImageModel {
     }
 
     /**
+     * Load a single image info from flickr backend service.
+     * @param callback A callback function will be executed after image data loaded successfully.
+     */
+    load(callback) {
+        this.getSizes(callback);
+    }
+
+    /**
      * Fetch a list of available sizes and corresponding source urls for a photo from flickr service.
      * TODO: Add fail handler
+     * @param callback A callback function will be executed after image data loaded successfully.
      */
-    getSizes() {
-        return fetchData(url(this.baseUrl, this.args)).then((imageSizes) => { 
+    getSizes(callback) {
+        const success = (imageSizes) => {
             this.parseSizes(imageSizes, this.targetSize);
-        });
+            callback && callback();
+        };
+
+        const error = () => {
+            console.error("Fetch image sizes failed.");
+        };
+
+        fetchData(url(this.baseUrl, this.args), success, error);
     }
 
     /**

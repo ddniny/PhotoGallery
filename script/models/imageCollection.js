@@ -35,9 +35,15 @@ class ImageCollection {
      * TODO: Add fail handler
      */
     fetchRecent() {
-        fetchData(url(this.baseUrl, this.recentArgs)).then((imagesData) => {
+        const success = (imagesData) => {
             this.fetchImages(imagesData);
-        });
+        };
+
+        const error = () => {
+            console.error("Fetch latest public photos failed.");
+        };
+
+        fetchData(url(this.baseUrl, this.recentArgs), success, error);
     }
 
     /**
@@ -48,10 +54,16 @@ class ImageCollection {
      */
     searchImages(searchTerm) {
         this.searchArgs.push(`text=${searchTerm}`);
-        fetchData(url(this.baseUrl, this.searchArgs)).then((imagesData) => {
+        const success = (imagesData) => {
             this.images = [];
             this.fetchImages(imagesData);
-        });
+        };
+
+        const error = () => {
+            console.error("Fetch data for search term: " + searchTerm + " failed.");
+        };
+
+        fetchData(url(this.baseUrl, this.searchArgs), success, error);
     }
 
     /**
@@ -68,8 +80,8 @@ class ImageCollection {
         }
 
         imagesData.photos.photo.forEach((photo) => {
-            let image = new ImageModel(photo.id, photo.title, photo.farm, photo.server, photo.secret);
-            this.appendImages(image);
+            let image = new ImageModel(photo.id, photo.title);
+            image.load(() => this.appendImages(image));
         });
     }
 
@@ -96,14 +108,12 @@ class ImageCollection {
      * @param image A ImageModel instance.
      */
     appendImages(image) {
-        image.imageLoaded.then(() => {
-            if (!image.imageMeta) {
-                return;
-            }
+        if (!image.imageMeta) {
+            return;
+        }
 
-            this.calcImagePos(image);
-            imageGallery.appendImage(image);
-        });
+        this.calcImagePos(image);
+        imageGallery.appendImage(image);
     }
 
     /**
