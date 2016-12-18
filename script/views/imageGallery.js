@@ -159,23 +159,20 @@ class ImageGallery {
         // show image title if there is any otherwise hide it.
         if (imageTitle && imageTitle.trim()) {
             this.imageTitle.innerHTML = imageTitle;
-            this.imageTitle.classList.remove("hidden");
-        } else if (!this.imageTitle.classList.contains("hidden")) {
-            this.imageTitle.classList.add("hidden");
+            this.imageTitle.classList.remove("none");
+        } else {
+            this.imageTitle.classList.add("none");
         }
         
-        if (this.preview.classList.contains("hidden")) {
-            this.preview.classList.remove("hidden");
-        }
+        this.preview.classList.remove("none");
+        this.showOrHideArrows(index);
     }
 
     /**
      * Close preview.
      */
     closePreview() {
-        if (!this.preview.classList.contains("hidden")) {
-            this.preview.classList.add("hidden");
-        }
+        this.preview.classList.add("none");
     }
 
     /**
@@ -187,13 +184,39 @@ class ImageGallery {
     showPreOrNextImg(e, preOrNext) {
         e.stopPropagation();
         const nextIdx = this.previewIdx + preOrNext,
-            x = ~~(nextIdx / this.colNum),
+            x = Math.floor(nextIdx / this.colNum),
             y = nextIdx % this.colNum,
             img = imageCollection.images[x] && imageCollection.images[x][y];
         if (img) {
             const imgSrc = img.imageMeta.source;
             this.openPreview(imgSrc, img.title, img.index);  
         } 
+    }
+
+    /**
+     * Show or hide left/right arrows based on the index of current showing image. 
+     *
+     * @param index The index of the current showing image.
+     */
+    showOrHideArrows(index) {    
+        const nextIdx = index + 1,
+            x = Math.floor(nextIdx / this.colNum),
+            y = nextIdx % this.colNum,
+            img = imageCollection.images[x] && imageCollection.images[x][y];
+
+        if (index === 0 && !img) {
+            this.arrowLeft.classList.remove("hidden");
+            this.arrowRight.classList.remove("hidden");
+        } if (index === 0) {
+            this.arrowLeft.classList.add("hidden");
+            this.arrowRight.classList.remove("hidden");
+        } else if (!img) {
+            this.arrowRight.classList.add("hidden");
+            this.arrowLeft.classList.remove("hidden");
+        } else {
+            this.arrowLeft.classList.remove("hidden");
+            this.arrowRight.classList.remove("hidden");
+        }
     }
 
     /**
@@ -255,9 +278,9 @@ class ImageGallery {
     showLoader(shouldShow) {
         if (shouldShow) {
             this.clearErrorMsg();
-            this.loader.classList.remove("hidden");
+            this.loader.classList.remove("none");
         } else {
-            this.loader.classList.add("hidden");
+            this.loader.classList.add("none");
         }
 
         this.isShowingLoader = shouldShow;

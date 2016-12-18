@@ -26,7 +26,6 @@ class ImageCollection {
         ];
 
         this.images = [];
-
         this.fetchRecent();
     }
 
