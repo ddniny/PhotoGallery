@@ -32,15 +32,15 @@ class ImageCollection {
 
     /**
      * Fetch a list of the latest public photos uploaded to flickr.
-     * TODO: Add fail handler
      */
     fetchRecent() {
         const success = (imagesData) => {
             this.fetchImages(imagesData);
         };
 
-        const error = () => {
-            console.error("Fetch latest public photos failed.");
+        const error = (errorMsg) => {
+            console.warn("Fetch latest public photos failed. " + errorMsg);
+            imageGallery.showErrorMsg(errorMsg);
         };
 
         fetchData(url(this.baseUrl, this.recentArgs), success, error);
@@ -49,34 +49,41 @@ class ImageCollection {
     /**
      * Fetch a list of photos matching the search term. 
      * Photos who's title, description or tags contain the text will be returned.
-     * TODO: Add fail handler
+     * 
      * @param searchTerm A string contains the text that is going to be searched.
      */
     searchImages(searchTerm) {
-        this.searchArgs.push(`text=${searchTerm}`);
+        this.searchArgs.push(`text=${encodeURIComponent(searchTerm)}`);
         const success = (imagesData) => {
-            this.images = [];
             this.fetchImages(imagesData);
         };
 
-        const error = () => {
-            console.error("Fetch data for search term: " + searchTerm + " failed.");
+        const error = (errorMsg) => {
+            console.warn("Fetch data for search term: " + searchTerm + " failed. " + errorMsg);
+            imageGallery.showErrorMsg(errorMsg);
         };
 
+        this.images = [];
         fetchData(url(this.baseUrl, this.searchArgs), success, error);
+        this.searchArgs.pop();
     }
 
     /**
      * Create an instance of ImageModel for each images in the list.
-     * TODO: Add fail handler
+     * 
      * @param imagesData A json object that contains a list of image data fetched from flickr.
      */
     fetchImages(imagesData) {
         if (imagesData.stat !== "ok" || 
         !imagesData.hasOwnProperty("photos") || 
         !imagesData.photos.hasOwnProperty("photo")) {
-            // something wrong!
+            let message = imagesData.message.trim() || "Someting wrong. Please try again later.";
+            imageGallery.showErrorMsg(message);
             return;
+        }
+
+        if (!imagesData.photos.photo.length) {
+            imageGallery.showErrorMsg("No images found.");
         }
 
         imagesData.photos.photo.forEach((photo) => {
@@ -90,6 +97,7 @@ class ImageCollection {
      * Will be called when the images position got changed for example on window resize.
      */
     rearrangeImages() {
+        if (!this.images || !this.images.length) return;
         const oldImages = this.images.concat(),
             rowLen = oldImages.length,
             colLen = oldImages[0].length;

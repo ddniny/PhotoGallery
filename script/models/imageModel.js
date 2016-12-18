@@ -44,7 +44,7 @@ class ImageModel {
 
     /**
      * Fetch a list of available sizes and corresponding source urls for a photo from flickr service.
-     * TODO: Add fail handler
+     * 
      * @param callback A callback function will be executed after image data loaded successfully.
      */
     getSizes(callback) {
@@ -53,8 +53,8 @@ class ImageModel {
             callback && callback();
         };
 
-        const error = () => {
-            console.error("Fetch image sizes failed.");
+        const error = (errorMsg) => {
+            console.warn("Fetch image sizes failed. " + errorMsg);
         };
 
         fetchData(url(this.baseUrl, this.args), success, error);

@@ -33,13 +33,13 @@ http.createServer(function(req, res) {
 				console.log("Serving file: " + localPath);
 				getFile(localPath, res, mimeType);
 			} else {
-				console.log("File not found: " + localPath);
+				console.error("File not found: " + localPath);
 				res.writeHead(404);
 				res.end();
 			}
 		});
 	} else {
-		console.log("Invalid file extension detected: " + ext + " (" + filename + ")")
+		console.error("Invalid file extension detected: " + ext + " (" + filename + ")")
 	}
 }).listen(process.env.PORT || port); 
 

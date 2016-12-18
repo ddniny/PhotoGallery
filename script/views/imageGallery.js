@@ -14,6 +14,8 @@ class ImageGallery {
         this.labelEl = document.getElementById("search-label");
         this.searchForm = document.getElementById("search");
         this.photoContainer = document.getElementsByClassName("photo-container")[0];
+        this.errorMsg = document.getElementsByClassName("error-message")[0];
+        this.loader = document.getElementsByClassName("loader")[0];
         this.photoGallery = document.getElementsByClassName("photo-gallery")[0];
         this.preview = document.getElementsByClassName("preview")[0];
         this.previewImage =  document.getElementsByClassName("preview-image")[0];
@@ -22,6 +24,7 @@ class ImageGallery {
         this.imageTitle = document.getElementsByClassName("image-title")[0];
 
         // initialize non-dom inistance variables
+        this.isShowingLoader = true;
         this.LazyResizeWaitInMilliseconds = 300;
         this.previewIdx = -1; // the index of an image that is currently opened in preview
         this.initHeaderOffset = this.stickyHeader.offsetTop;
@@ -30,6 +33,9 @@ class ImageGallery {
         
         // register event listenters 
         this.registerEventsHandler();
+
+        // show loader before getting any data
+        this.showLoader(true);
     }
 
     /**
@@ -130,6 +136,11 @@ class ImageGallery {
             img.style.left = image.x + "px";
             div.appendChild(img);
 
+            // hide loader
+            if (this.isShowingLoader) {
+                this.showLoader(false);
+            }
+
             // append to photoGallery element
             this.photoGallery.appendChild(div);
         }
@@ -210,11 +221,45 @@ class ImageGallery {
 
     /**
      * Get search term, empty photoGallery and call imageCollection to search images.
-     * TODO: validate search term input
      */
     searchImages() {
         const searchTerm = document.getElementById("search-terms").value;
         this.photoGallery.innerHTML = "";
+        this.showLoader(true);
         imageCollection.searchImages(searchTerm);
     }
+
+    /**
+     * Show error messages on screen.
+     * @param message The error message should show.
+     */
+    showErrorMsg(message) {
+        if (this.isShowingLoader) {
+            this.showLoader(false);
+        }
+
+        this.errorMsg.innerHTML = message;
+    }
+
+    /**
+     * Clear error messages on screen.
+     */
+    clearErrorMsg() {
+        this.errorMsg.innerHTML = "";
+    }
+
+    /**
+     * Show or hide loader.
+     * @param shouldShow A boolean type. Show loader if set to true otherwise hide it.
+     */
+    showLoader(shouldShow) {
+        if (shouldShow) {
+            this.clearErrorMsg();
+            this.loader.classList.remove("hidden");
+        } else {
+            this.loader.classList.add("hidden");
+        }
+
+        this.isShowingLoader = shouldShow;
+    }   
 }

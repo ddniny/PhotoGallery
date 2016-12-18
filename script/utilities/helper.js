@@ -14,7 +14,18 @@ function fetchData(url, success, error) {
             if (xmlhttp.status == 200) {
                 success && success(JSON.parse(xmlhttp.responseText));
             } else {
-                error && error();
+                let msg = '';
+                if (xmlhttp.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (xmlhttp.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (xmlhttp.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                } else {
+                    msg = 'Uncaught Error.\n' + xmlhttp.responseText;
+                }
+
+                error && error(msg);
             }
         }
     };
