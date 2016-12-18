@@ -18,9 +18,8 @@
     "url": "https://github.com/ddniny/PhotoGallery/issues"
   },
   "homepage": "https://github.com/ddniny/PhotoGallery#readme",
-  "dependencies": {
-    "fs": "0.0.1-security",
-    "http": "0.0.0",
-    "path": "^0.12.7"
+  "dependencies": {},
+  "engines": {
+    "node": "6.2.2"
   }
 }

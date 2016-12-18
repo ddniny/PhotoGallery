@@ -1,10 +1,9 @@
 const port = 3000,
-    serverUrl = "127.0.0.1";
     http = require("http"),
     path = require("path"),
-    fs = require("fs"); // TODO: Add to package file
+    fs = require("fs"); 
 
-console.log("Starting web server at " + serverUrl + ":" + port);
+console.log("Starting web server at port:" + port);
 
 http.createServer(function(req, res) {
     console.log(req.method);
@@ -42,7 +41,7 @@ http.createServer(function(req, res) {
 	} else {
 		console.log("Invalid file extension detected: " + ext + " (" + filename + ")")
 	}
-}).listen(port, serverUrl);
+}).listen(process.env.PORT || port); 
 
 function getFile(localPath, res, mimeType) {
 	fs.readFile(localPath, function(err, contents) {
