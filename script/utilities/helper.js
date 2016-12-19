@@ -68,3 +68,13 @@ function debounce(func, wait, immediate) {
 		if (callNow) func.apply(context, args);
 	};
 };
+
+/**
+ * Get the document height
+ */
+function getDocumentHeight() {
+    const body = document.body,
+        html = document.documentElement;
+
+    return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+}

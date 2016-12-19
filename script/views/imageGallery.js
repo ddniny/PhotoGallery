@@ -113,6 +113,11 @@ class ImageGallery {
         } else { 
             this.stickyHeader.classList.remove("sticky");
         }
+
+        const nearToBottom = 100;
+        if (scrollTop + window.innerHeight > getDocumentHeight() - nearToBottom) {
+            imageCollection.loadMore();
+        }
     }
 
     /**
@@ -165,6 +170,7 @@ class ImageGallery {
         }
         
         this.preview.classList.remove("none");
+        this.previewImage.classList.add("open");
         this.showOrHideArrows(index);
     }
 
@@ -173,6 +179,7 @@ class ImageGallery {
      */
     closePreview() {
         this.preview.classList.add("none");
+        this.previewImage.classList.remove("open");
     }
 
     /**
@@ -249,7 +256,11 @@ class ImageGallery {
         const searchTerm = document.getElementById("search-terms").value;
         this.photoGallery.innerHTML = "";
         this.showLoader(true);
-        imageCollection.searchImages(searchTerm);
+        if (searchTerm.trim()) {
+            imageCollection.searchImages(searchTerm, false, []);
+        } else {
+            imageCollection.fetchRecent(false, []);
+        }
     }
 
     /**

@@ -26,13 +26,28 @@ class ImageCollection {
         ];
 
         this.images = [];
-        this.fetchRecent();
+        this.currentPage = 1;
+        this.lastCalledGetRecentApi = true;
+        this.lastSearchTerm = "";
+        this.fetchRecent(false, []);
+    }
+
+    loadMore() {
+        console.log("Loading more images...");
+        if (this.lastCalledGetRecentApi) {
+            this.fetchRecent(true, [`page=${++this.currentPage}`]);
+        } else {
+            this.searchImages(this.lastSearchTerm, true, [`page=${++this.currentPage}`]);
+        }
     }
 
     /**
      * Fetch a list of the latest public photos uploaded to flickr.
+     * @param isLoadMore Indicate whether or not loading more data or fetch new data.
+     * @param options More arguments need to be passed through url.
      */
-    fetchRecent() {
+    fetchRecent(isLoadMore, options) {
+        this.lastCalledGetRecentApi = true;
         const success = (imagesData) => {
             this.fetchImages(imagesData);
         };
@@ -41,8 +56,13 @@ class ImageCollection {
             console.warn("Fetch latest public photos failed. " + errorMsg);
             imageGallery.showErrorMsg(errorMsg);
         };
-
-        fetchData(url(this.baseUrl, this.recentArgs), success, error);
+        
+        if (!isLoadMore) {
+            this.images = [];
+            this.currentPage = 1;
+        }
+        
+        fetchData(url(this.baseUrl, this.recentArgs.concat(options)), success, error);
     }
 
     /**
@@ -50,9 +70,13 @@ class ImageCollection {
      * Photos who's title, description or tags contain the text will be returned.
      * 
      * @param searchTerm A string contains the text that is going to be searched.
+     * @param isLoadMore Indicate whether or not loading more data or fetch new data.
+     * @param options More arguments need to be passed through url.
      */
-    searchImages(searchTerm) {
-        this.searchArgs.push(`text=${encodeURIComponent(searchTerm)}`);
+    searchImages(searchTerm, isLoadMore, options) {
+        this.lastCalledGetRecentApi = false;
+        this.lastSearchTerm = searchTerm;
+        options.push(`text=${encodeURIComponent(searchTerm)}`);
         const success = (imagesData) => {
             this.fetchImages(imagesData);
         };
@@ -61,10 +85,13 @@ class ImageCollection {
             console.warn("Fetch data for search term: " + searchTerm + " failed. " + errorMsg);
             imageGallery.showErrorMsg(errorMsg);
         };
-
-        this.images = [];
-        fetchData(url(this.baseUrl, this.searchArgs), success, error);
-        this.searchArgs.pop();
+        
+        if (!isLoadMore) {
+            this.images = [];
+            this.currentPage = 1;
+        }
+        
+        fetchData(url(this.baseUrl, this.searchArgs.concat(options)), success, error);
     }
 
     /**
@@ -78,6 +105,11 @@ class ImageCollection {
         !imagesData.photos.hasOwnProperty("photo")) {
             let message = imagesData.message.trim() || "Someting wrong. Please try again later.";
             imageGallery.showErrorMsg(message);
+            return;
+        }
+
+        if (imagesData.photos.page > imagesData.photos.pages) {
+            console.log("Last page loaded.");
             return;
         }
 
