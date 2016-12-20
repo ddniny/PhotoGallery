@@ -15,6 +15,9 @@ Tested on latest versions of Chrome, Safari, Firefox and IE (IE11 and Edge).
 - Enable less;
 - Add cache;
 
+# Prerequisites
+Please install Node.js and npm.
+
 # Install dependencies of app
     $ npm install
 
