@@ -111,13 +111,14 @@ class ImageCollection {
             return;
         }
 
-        if (imagesData.photos.page > imagesData.photos.pages) {
-            console.log("Last page loaded.");
+        if (!imagesData.photos.photo.length) {
+            imageGallery.showErrorMsg("No images found.");
             return;
         }
 
-        if (!imagesData.photos.photo.length) {
-            imageGallery.showErrorMsg("No images found.");
+        if (imagesData.photos.page > imagesData.photos.pages) {
+            console.log("Last page loaded.");
+            return;
         }
 
         imagesData.photos.photo.forEach((photo) => {
