@@ -111,8 +111,8 @@ class ImageCollection {
             return;
         }
 
-        if (!imagesData.photos.photo.length) {
-            imageGallery.showErrorMsg("No image found.");
+        if (!imagesData.photos.photo.length && imagesData.photos.page === 1) {
+            imageGallery.showErrorMsg("No image found.");   
             return;
         }
 
