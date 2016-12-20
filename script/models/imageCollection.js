@@ -32,6 +32,9 @@ class ImageCollection {
         this.fetchRecent(false, []);
     }
 
+    /**
+     * Load more images from flickr backend service.
+     */
     loadMore() {
         console.log("Loading more images...");
         if (this.lastCalledGetRecentApi) {
