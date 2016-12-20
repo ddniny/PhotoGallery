@@ -112,7 +112,7 @@ class ImageCollection {
         }
 
         if (!imagesData.photos.photo.length) {
-            imageGallery.showErrorMsg("No images found.");
+            imageGallery.showErrorMsg("No image found.");
             return;
         }
 
